@@ -80,4 +80,7 @@ rm -rf ${OSDBASE}/var/*
 rm -rf ${OSDBASE}/osd*
 rm -rf ${ETCDBASE}/*
 
+ssh-keygen -f "/home/cameron/.ssh/known_hosts" -R "[localhost]:2222"
+kill $SSH_AGENT_PID
+
 echo "[OKAY] all done here, have a great day!"

@@ -240,6 +240,8 @@ echo "[INFO] database server started"
 mkdir -p ${OSDBASE}/etc/adminserver
 ssh-keygen -f ${OSDBASE}/etc/adminserver/id_rsa -N '' -t rsa >/dev/null 2>&1
 ssh-keygen -f ${OSDBASE}/etc/adminserver/id_dsa -N '' -t dsa >/dev/null 2>&1
+eval $(ssh-agent)
+ssh-add ${OSDBASE}/etc/adminserver/id_rsa
 
 OPUT=$(docker run -d \
   --name ${CONTAINER_PREFIX}console \
@@ -251,7 +253,9 @@ OPUT=$(docker run -d \
   -v ${OSDBASE}/etc/adminserver:/etc/adminserver \
   -e ETCD_ENDPOINT=http://${ETCD_ENDPOINT} \
   -e BTRDB_ENDPOINTS=${SUB24}.21:4410 \
-  btrdb/console:${VERSION})
+  btrdb/console:${VERSION} &&\
+  docker exec ${CONTAINER_PREFIX}console bash -c "mkdir ~/.ssh && cat /etc/adminserver/id_rsa.pub >> ~/.ssh/authorized_keys"
+)
 
 if [[ $? != 0 ]]
 then
